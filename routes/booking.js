@@ -10,6 +10,17 @@ const protect = require('../middleware/authMiddleware');
 const MAX_TICKETS = 100;
 const Kuota = require('../models/Kuota');
 const fs = require('fs');
+const imageToBase64 = (imagePath) => {
+  const imageBuffer = fs.readFileSync(imagePath);
+  return imageBuffer.toString('base64');
+};
+
+// Image path
+const imagePath = path.join(__dirname, 'ok.png');
+const base64Image = imageToBase64(imagePath);
+
+// Log base64 string (or use it in your email HTML template)
+console.log(base64Image);
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, 'uploads/qris-proofs'); // Folder untuk menyimpan bukti QRIS
@@ -346,7 +357,7 @@ router.post('/approve-reject-booking/:bookingId', protect, async (req, res) => {
                 
                 <hr />
                 
-                <img src="1732944727265.png" alt="Booking Updated" width="400" />
+                <img src="data:image/png;base64,${base64Image}" alt="Booking Updated" width="400" />
               </body>
             </html>
           `,

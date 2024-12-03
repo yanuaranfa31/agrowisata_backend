@@ -26,8 +26,8 @@ connectDB();
 
 // Gunakan routing untuk auth
 app.use('/api/auth', authRoutes);
-app.use('/api/booking', protect, bookingRoutesuser);
-app.use('/api/bookinguser', bookingRoutes);
+app.use('/api/booking', protect, bookingRoutes);
+app.use('/api/bookinguser', bookingRoutesuser);
 app.use('/api/kuota', kuotaRouts);
 
 // Menjalankan server
