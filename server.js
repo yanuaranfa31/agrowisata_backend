@@ -29,6 +29,9 @@ app.use('/api/auth', authRoutes);
 app.use('/api/booking', protect, bookingRoutes);
 app.use('/api/bookinguser', bookingRoutesuser);
 app.use('/api/kuota', kuotaRouts);
+app.get('/test', (req, res) => {
+  res.send('halo');
+});
 
 // Menjalankan server
 const PORT = process.env.PORT || 5000;
