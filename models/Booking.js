@@ -37,6 +37,9 @@ const BookingSchema = new mongoose.Schema({
     type: String,
     default: 'Pending', // Status of booking (e.g., Pending, Approved)
   },
+  alamat:{
+    type:String,
+  },
   kuotaId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Kuota',

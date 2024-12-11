@@ -50,8 +50,8 @@ const upload = multer({
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-      user: '', // Replace with your Gmail email
-      pass: '',   // Replace with your Gmail password (or app password)
+      user: 'raulmahya11@gmail.com', // Replace with your Gmail email
+      pass: 'tcjg njnt obkk mswf',   // Replace with your Gmail password (or app password) // Replace with your Gmail password (or app password)
     },
   });
   router.post('/upload-qris-proof/:bookingId', protect, upload.single('qrisProof'), async (req, res) => {
@@ -233,6 +233,7 @@ const transporter = nodemailer.createTransport({
         qrisProof,
         totalAmount,
         kuotaId, // Menghubungkan booking dengan kuota
+        alamat,
       });
   
       // Menyimpan pemesanan ke database

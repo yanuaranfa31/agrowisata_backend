@@ -18,12 +18,6 @@ const KuotaSchema = new mongoose.Schema({
   sisa_kuota: {
     type: Number,
     required: true,
-    validate: {
-      validator: function (value) {
-        return value <= this.kuota; // Sisa kuota tidak boleh lebih besar dari kuota
-      },
-      message: 'Sisa kuota tidak boleh lebih besar dari kuota',
-    },
   },
 });
 
