@@ -146,6 +146,9 @@ paths:
                 fullName:
                   type: string
                   description: Full name of the booking person
+                email:
+                  type: string
+                  description: Email
                 phoneNumber:
                   type: string
                   description: Phone number of the booking person
