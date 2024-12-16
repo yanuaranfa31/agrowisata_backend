@@ -1,0 +1,595 @@
+openapi: 3.0.3
+info:
+  title: My API
+  version: 1.0.0
+  description: API for user registration
+  contact:
+    name: API Support
+    url: https://api.example.com/support
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0
+
+servers:
+  - url: http://localhost:5000/api
+
+tags:
+  - name: User Booking
+    description: User Booking related operations
+  - name: Authentication
+    description: Authentication related operations
+  - name: Kuota
+    description: Operasi terkait data kuota
+  - name: Booking
+    description: Booking related operations
+
+
+paths:
+  /test:
+    get:
+      responses:
+        200:
+          description: success test
+  /auth/test:
+    get:
+      security:
+        - BearerToken: []
+      responses:
+        200:
+          description: success auth test
+  /auth/register:
+    post:
+      summary: Register a new user
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - fullName
+                - email
+                - password
+                - confirmPassword
+              properties:
+                fullName:
+                  type: string
+                  description: Full name of the user
+                  default: test
+                email:
+                  type: string
+                  format: email
+                  description: Email address of the user
+                  default: test@gmail.com
+                password:
+                  type: string
+                  format: password
+                  description: Password of the user
+                  default: password
+                confirmPassword:
+                  type: string
+                  format: password
+                  description: Confirmation of the password
+                  default: password
+      responses:
+        '201':
+          description: User registered successfully
+        '400':
+          description: Bad Request (e.g., missing fields, invalid data, passwords don't match)
+        '500':
+          description: Internal Server Error
+  /auth/login:
+    post:
+      summary: Login a user
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: Email address of the user
+                  default: test111@gmail.com
+                password:
+                  type: string
+                  format: password
+                  description: Password of the user
+                  default: password
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    description: Authentication token
+        '401':
+          description: Unauthorized (invalid credentials or missing token)
+        '400':
+          description: Bad Request (e.g., missing fields, invalid data)
+        '500':
+          description: Internal Server Error
+  /bookinguser/book-ticket:
+    post:
+      summary: Book a ticket
+      tags:
+        - User Booking
+      security:
+        - BearerToken: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - fullName
+                - phoneNumber
+                - numberOfTickets
+                - guideOption
+                - paymentMethod
+                - kuotaId
+              properties:
+                fullName:
+                  type: string
+                  description: Full name of the booking person
+                phoneNumber:
+                  type: string
+                  description: Phone number of the booking person
+                numberOfTickets:
+                  type: integer
+                  description: Number of tickets to be booked
+                  minimum: 1
+                guideOption:
+                  type: string
+                  description: Optional choice for a guide (e.g., 'Yes', 'No')
+                paymentMethod:
+                  type: string
+                  description: Payment method (e.g., 'QRIS', 'Other')
+                kuotaId:
+                  type: string
+                  description: ID of the available quota to be used
+                qrisProof:  # Optional multipart/form-data field
+                  type: string
+                  format: binary
+                  description: Upload proof of QRIS payment (if payment method is QRIS)
+      responses:
+        '201':
+          description: Booking successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Booking confirmation message
+                  bookingId:
+                    type: string
+                    description: ID of the created booking
+                  totalAmount:
+                    type: number
+                    description: Total amount for the booking
+                  status:
+                    type: string
+                    description: Status of the booking (may include details)
+        '400':
+          description: Bad Request (e.g., missing fields, invalid data, not enough quota)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message explaining the bad request
+        '404':
+          description: Not Found (e.g., quota not found)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message explaining the not found resource
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Generic server error message
+  /kuota:
+    get:
+      tags:
+        - Kuota
+      summary: Dapatkan semua data kuota
+      responses:
+        '200':
+          description: Berhasil mendapatkan data kuota
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Kuota'
+    post:
+      tags:
+        - Kuota
+      summary: Tambahkan data kuota baru
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Kuota'
+      responses:
+        '201':
+          description: Data kuota berhasil ditambahkan
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Kuota'
+        '400':
+          description: Permintaan tidak valid
+  /kuota/{id}:
+    get:
+      tags:
+        - Kuota
+      summary: Dapatkan data kuota berdasarkan ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID kuota
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Berhasil mendapatkan data kuota
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Kuota'
+        '404':
+          description: Data kuota tidak ditemukan
+    put:
+      tags:
+        - Kuota
+      summary: Update data kuota
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID kuota
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Kuota'
+      responses:
+        '200':
+          description: Data kuota berhasil diupdate
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Kuota'
+        '404':
+          description: Data kuota tidak ditemukan
+    delete:
+      tags:
+        - Kuota
+      summary: Hapus data kuota
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID kuota
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Data kuota berhasil dihapus
+        '404':
+          description: Data kuota tidak ditemukan
+  /bookings:
+    get:
+      tags:
+        - Booking
+      summary: Get all bookings
+      security:
+        - BearerToken: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Booking'
+    post:
+      tags:
+        - Booking
+      summary: Create a new booking
+      security:
+        - BearerToken: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - fullName
+                - phoneNumber
+                - numberOfTickets
+                - guideOption
+                - paymentMethod
+                - kuotaId
+              properties:
+                fullName:
+                  type: string
+                  description: Full name of the booking person
+                phoneNumber:
+                  type: string
+                  description: Phone number of the booking person
+                numberOfTickets:
+                  type: integer
+                  description: Number of tickets to be booked
+                  minimum: 1
+                guideOption:
+                  type: string
+                  description: Optional choice for a guide (e.g., 'Yes', 'No')
+                paymentMethod:
+                  type: string
+                  description: Payment method (e.g., 'QRIS', 'Other')
+                kuotaId:
+                  type: string
+                  description: ID of the available quota to be used
+                qrisProof:  # Optional multipart/form-data field
+                  type: string
+                  format: binary
+                  description: Upload proof of QRIS payment (if payment method is QRIS)
+      responses:
+        '201':
+          description: Booking successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Booking confirmation message
+                  bookingId:
+                    type: string
+                    description: ID of the created booking
+                  totalAmount:
+                    type: number
+                    description: Total amount for the booking
+                  status:
+                    type: string
+                    description: Status of the booking (may include details)
+        '400':
+          description: Bad Request (e.g., missing fields, invalid data, not enough quota)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message explaining the bad request
+        '404':
+          description: Not Found (e.g., quota not found)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message explaining the not found resource
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Generic server error message
+  /bookings/{id}:
+    get:
+      tags:
+        - Booking
+      summary: Get a specific booking
+      security:
+        - BearerToken: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Booking ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Booking found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+        '404':
+          description: Booking not found
+    put:
+      tags:
+        - Booking
+      summary: Update a booking
+      security:
+        - BearerToken: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Booking ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Booking'
+      responses:
+        '200':
+          description: Booking updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+        '404':
+          description: Booking not found
+    delete:
+      tags:
+        - Booking
+      summary: Delete a booking
+      security:
+        - BearerToken: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Booking ID
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Booking deleted successfully
+        '404':
+          description: Booking not found
+  /bookings/{id}/approve:
+    put:
+      tags:
+        - Booking
+      summary: Approve a booking
+      security:
+        - BearerToken: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Booking ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Booking approved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+        '404':
+          description: Booking not found
+  /bookings/{id}/reject:
+    put:
+      tags:
+        - Booking
+      summary: Reject a booking
+      security:
+        - BearerToken: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Booking ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Booking rejected successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+        '404':
+          description: Booking not found
+
+components:
+  securitySchemes:
+    BearerToken:
+      type: http
+      scheme: bearer
+  schemas:
+    Kuota:
+      type: object
+      properties:
+        tanggal:
+          type: string
+          format: date
+          description: Tanggal kuota
+        destinasi:
+          type: string
+          description: Destinasi kuota
+        kuota:
+          type: integer
+          description: Total kuota
+          minimum: 1
+        sisa_kuota:
+          type: integer
+          description: Sisa kuota
+    Booking:
+      type: object
+      properties:
+        fullName:
+          type: string
+        phoneNumber:
+          type: string
+        numberOfTickets:
+          type: integer
+          minimum: 1
+        guideOption:
+          type: boolean
+        paymentMethod:
+          type: string
+          enum: ['QRIS', 'Cash']
+        qrisProof:
+          type: string
+        totalAmount:
+          type: number
+        status:
+          type: string
+          enum: ['Pending', 'Approved', ...]
+        alamat:
+          type: string
+        kuotaId:
+          type: string
+          format: ObjectId
+      required:
+        - fullName
+        - phoneNumber
+        - numberOfTickets
+        - paymentMethod
+        - kuotaId
