@@ -173,10 +173,21 @@ router.delete('/:id', adminMiddleware, async (req, res) => {
 // PUT /bookings/{id}/approve
 router.put('/:id/approve', adminMiddleware, async (req, res) => {
   try {
-    const booking = await Booking.findByIdAndUpdate(req.params.id, { status: 'Approved' }, { new: true });
+    const booking = await Booking.findByIdAndUpdate(req.params.id, { status: 'Approved' }, { new: true }).populate('kuotaId');
     if (!booking) {
       return res.status(404).json({ message: 'Booking tidak ditemukan' });
-    }
+    }    
+
+    const data = {
+      fullName: booking.fullName,
+      phoneNumber: booking.phoneNumber,
+      email: booking.email,
+      departureDate: booking.kuotaId.tanggal,
+      localTourists: booking.numberOfTickets,
+      totalPayment: booking.totalAmount,
+    };
+
+    sendBookingTicketEmail(booking.email, data)
     res.json(booking);
   } catch (error) {
     res.status(500).json({ message: error.message });
