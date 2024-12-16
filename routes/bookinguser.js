@@ -89,8 +89,6 @@ router.post('/book-ticket', authMiddleware, upload.single('qrisProof'), async (r
       totalPayment: totalAmount,
     };
 
-    await sendBookingTicketEmail(email, data);
-
     res.status(201).json({
       message: 'Booking successful',
       bookingId: booking._id,
