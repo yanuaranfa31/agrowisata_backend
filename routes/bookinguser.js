@@ -58,7 +58,7 @@ router.post('/book-ticket', authMiddleware, upload.single('qrisProof'), async (r
     // Ensure enough quota is available for the requested number of tickets
     if (numberOfTickets > kuota.sisa_kuota) {
       return res.status(400).json({ message: 'Not enough quota available for this booking' });
-    }
+    }    
 
     // Create a new booking
     const booking = new Booking({
