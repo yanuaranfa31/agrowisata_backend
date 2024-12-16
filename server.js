@@ -1,16 +1,14 @@
 const express = require('express');
-const dotenv = require('dotenv');
+require('dotenv').config();
 const bodyParser = require('body-parser');
 const cors = require('cors'); // Impor cors
 const connectDB = require('./config/db');
 const authRoutes = require('./routes/auth');
-const bookingRoutes = require('./routes/booking');
-const bookingRoutesuser = require('./routes/bookinguser');
-const protect = require('./middleware/authMiddleware');
 const kuotaRouts = require('./routes/kuota');
-
-// Mengambil variabel dari .env
-dotenv.config();
+const bookingRoutes = require('./routes/booking');
+const bookingUserRoutes = require('./routes/bookinguser');
+const protect = require('./middleware/authMiddleware');
+const isadmin = require('./middleware/adminMiddleware');
 
 // Inisialisasi express
 const app = express();
@@ -26,8 +24,8 @@ connectDB();
 
 // Gunakan routing untuk auth
 app.use('/api/auth', authRoutes);
-app.use('/api/booking', protect, bookingRoutes);
-app.use('/api/bookinguser', bookingRoutesuser);
+app.use('/api/bookings', isadmin, bookingRoutes);
+app.use('/api/bookinguser', protect, bookingUserRoutes);
 app.use('/api/kuota', kuotaRouts);
 app.get('/test', (req, res) => {
   res.send('halo');
