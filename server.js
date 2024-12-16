@@ -1,5 +1,5 @@
 const express = require('express');
-require('dotenv').config();
+const dotenv = require('dotenv').config();
 const bodyParser = require('body-parser');
 const cors = require('cors'); // Impor cors
 const connectDB = require('./config/db');

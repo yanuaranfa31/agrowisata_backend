@@ -7,10 +7,10 @@ const router = express.Router();
 
 // Registrasi
 router.post('/register', async (req, res) => {
-  const { fullName, email, password, confirmPassword,role } = req.body;
+  const { fullName, email, password, confirmPassword } = req.body;
 
   // Validasi Input
-  if (!fullName || !email || !password || !confirmPassword || !role) {
+  if (!fullName || !email || !password || !confirmPassword) {
     return res.status(400).json({ message: 'Please fill in all fields' });
   }
   if (!validator.isEmail(email)) {
@@ -22,6 +22,8 @@ router.post('/register', async (req, res) => {
   if (password.length < 6) {
     return res.status(400).json({ message: 'Password must be at least 6 characters' });
   }
+
+  const role = 'user';
 
   try {
     // Cek apakah email sudah terdaftar

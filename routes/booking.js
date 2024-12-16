@@ -23,8 +23,6 @@ const upload = multer({ storage: storage });
 
 // Middleware untuk validasi data booking
 const validateBookingData = (req, res, next) => {
-  console.log(req.body);
-  
   const { fullName, phoneNumber, email, numberOfTickets, paymentMethod, qrisProof, kuotaId } = req.body;
 
   // Validasi sederhana
@@ -58,7 +56,7 @@ router.get('/', adminMiddleware, async (req, res) => {
 router.post('/', adminMiddleware, validateBookingData, upload.single('qrisProof'), async (req, res) => {
   const { fullName, phoneNumber, email, numberOfTickets, guideOption, paymentMethod, kuotaId } = req.body;
   const qrisProof = req.file ? req.file.path : null; // Access the uploaded file (QRIS proof)
-  
+
   // Validate input fields
   if (!fullName || !phoneNumber || !email || !numberOfTickets || !paymentMethod || !kuotaId) {
     return res.status(400).json({ message: 'Please fill in all required fields' });
@@ -112,6 +110,17 @@ router.post('/', adminMiddleware, validateBookingData, upload.single('qrisProof'
     // Reduce the quota after the successful booking
     kuota.sisa_kuota -= numberOfTickets;
     await kuota.save();
+
+    const data = {
+      fullName,
+      phoneNumber,
+      email,
+      departureDate: kuota.tanggal_keberangkatan, // Example: Add departure date dynamically from Kuota
+      localTourists: numberOfTickets,
+      totalPayment: totalAmount,
+    };
+
+    await sendBookingTicketEmail(email, data);
 
     res.status(201).json({
       message: 'Booking successful',
