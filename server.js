@@ -24,7 +24,7 @@ connectDB();
 
 // Gunakan routing untuk auth
 app.use('/api/auth', authRoutes);
-app.use('/api/bookings', isadmin, bookingRoutes);
+app.use('/api/bookings', protect, isadmin, bookingRoutes);
 app.use('/api/bookinguser', protect, bookingUserRoutes);
 app.use('/api/kuota', kuotaRouts);
 app.get('/test', (req, res) => {

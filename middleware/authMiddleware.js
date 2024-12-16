@@ -13,7 +13,7 @@ const protect = (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     
     // Attach user to request object (decoded contains user data, including email)
-    req.user = decoded; // Assuming decoded token contains user info like email
+    req.user = decoded.user; // Assuming decoded token contains user info like email
 
     next();
   } catch (error) {
