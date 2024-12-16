@@ -3,6 +3,8 @@ const multer = require('multer');
 const validator = require('validator');
 const Kuota = require('../models/Kuota'); // Assume Kuota model is imported
 const Booking = require('../models/Booking'); // Assume Booking model is imported
+const authMiddleware = require('../middleware/authMiddleware');
+const { sendBookingTicketEmail } = require('../services/mail');
 
 const router = express.Router();
 
@@ -20,8 +22,8 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 // POST route to book ticket
-router.post('/book-ticket', upload.single('qrisProof'), async (req, res) => {
-  const { fullName, phoneNumber, numberOfTickets, guideOption, paymentMethod, kuotaId } = req.body;
+router.post('/book-ticket', authMiddleware, upload.single('qrisProof'), async (req, res) => {
+  const { fullName, email, phoneNumber, numberOfTickets, guideOption, paymentMethod, kuotaId } = req.body;
   const qrisProof = req.file ? req.file.path : null; // Access the uploaded file (QRIS proof)
 
   // Validate input fields
@@ -61,6 +63,7 @@ router.post('/book-ticket', upload.single('qrisProof'), async (req, res) => {
     // Create a new booking
     const booking = new Booking({
       fullName,
+      email,
       phoneNumber,
       numberOfTickets,
       guideOption,
@@ -76,6 +79,17 @@ router.post('/book-ticket', upload.single('qrisProof'), async (req, res) => {
     // Reduce the quota after the successful booking
     kuota.sisa_kuota -= numberOfTickets;
     await kuota.save();
+
+    const data = {
+      fullName,
+      phoneNumber,
+      email,
+      departureDate: kuota.tanggal, // Example: Add departure date dynamically from Kuota
+      localTourists: numberOfTickets,
+      totalPayment: totalAmount,
+    };
+
+    await sendBookingTicketEmail(email, data);
 
     res.status(201).json({
       message: 'Booking successful',
