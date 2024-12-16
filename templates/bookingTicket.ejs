@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Informasi Transaksi</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f3e8;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .transaction-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 700px;
+            width: 100%;
+        }
+        .header {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #000;
+            padding-bottom: 10px;
+        }
+        .info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .info-left, .info-right {
+            width: 45%;
+        }
+        .info-item {
+            margin-bottom: 10px;
+        }
+        .info-item span {
+            display: block;
+        }
+        .info-item .label {
+            font-weight: bold;
+        }
+        .ticket-image {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        .ticket-image img {
+            max-width: 200px;
+            height: auto;
+        }
+        .note {
+            font-size: 12px;
+            color: red;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+        .button.cancel {
+            background-color: #ccc;
+            color: #000;
+        }
+        .button.cancel:hover {
+            background-color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="transaction-container">
+        <div class="header">Informasi Transaksi</div>
+
+        <div class="info">
+            <div class="info-left">
+                <div class="info-item">
+                    <span class="label">Nama:</span>
+                    <span><%= fullName %></span>
+                </div>
+                <div class="info-item">
+                    <span class="label">Nomor Telepon:</span>
+                    <span><%= phoneNumber %></span>
+                </div>
+                <div class="info-item">
+                    <span class="label">Email:</span>
+                    <span><%= email %></span>
+                </div>
+            </div>
+
+            <div class="info-right">
+                <div class="info-item">
+                    <span class="label">Tanggal Berangkat:</span>
+                    <span><%= departureDate %></span>
+                </div>
+                <div class="info-item">
+                    <span class="label">Wisatawan Lokal:</span>
+                    <span><%= localTourists %> Orang</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">Total Pembayaran:</span>
+                    <span>Rp <%= totalPayment %></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- <div class="ticket-image">
+            <img src="/path/to/ticket-image.jpg" alt="E-Ticket">
+        </div> -->
+
+        <!-- <div class="note">
+            *Pastikan Email yang anda masukkan adalah email yang valid.<br>
+            Karena tagihan dan laporan transaksi dikirim melalui email.
+        </div> -->
+
+        <!-- <div class="buttons">
+            <a href="#" class="button">Lanjut Bayar</a>
+            <a href="#" class="button cancel">Batal</a>
+        </div> -->
+    </div>
+</body>
+</html>
