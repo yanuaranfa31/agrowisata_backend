@@ -9,6 +9,7 @@ const bookingRoutes = require('./routes/booking');
 const bookingUserRoutes = require('./routes/bookinguser');
 const protect = require('./middleware/authMiddleware');
 const isadmin = require('./middleware/adminMiddleware');
+const path = require('path');
 
 // Inisialisasi express
 const app = express();
@@ -21,6 +22,8 @@ app.use(bodyParser.json());
 
 // Koneksi ke MongoDB
 connectDB();
+
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Gunakan routing untuk auth
 app.use('/api/auth', authRoutes);
